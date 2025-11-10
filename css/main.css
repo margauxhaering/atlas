@@ -1,0 +1,261 @@
+
+body{
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+a{
+  text-decoration: none;
+}
+
+#absContainer {
+  flex: 0.5;
+}
+
+#imgContainer {
+  flex: 0.5;
+}
+
+
+.index-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: justify;
+
+}
+.index-box img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 100%;
+  height: auto;
+}
+
+.index-boxp {
+  text-align: left
+}
+
+/* ---------- TOP MENU ---------- */
+#topMenu {
+  min-height: 60px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 5;
+}
+
+#topMenu h1 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0;
+}
+
+#menuButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+#menuButtons button {
+  background:transparent;
+  border: none;
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#menuButtons button:hover {
+  background: #2c7ed1;
+}
+
+#topMenu a:visited {
+  color: black;
+}
+
+#dynamicBox {
+  flex: 1;
+  padding: 12px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  min-width: 200px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+/* ---------- MAIN AREA ---------- */
+#mainContainer {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+#infoPanel {
+  width: 250px;
+  background: #ffffff;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  z-index: 2;
+  overflow-y: auto;
+}
+
+#infoPanel h2 {
+  font-size: 1.3rem;
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+#infoPanel p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #555;
+}
+
+.legend {
+  margin-top: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-right: 0.5rem;
+}
+
+#pcaContainer {
+  flex: 1;
+  position: relative;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  background: #fafafa;
+}
+
+text.axis-label {
+  font-size: 14px;
+  font-weight: 600;
+  fill: #333;
+}
+
+#########
+
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+
+#dashboard {
+  display: flex;
+  width: 95%;
+  max-width: 1500px;
+  gap: 20px;
+  height: 80vh;
+}
+#dashboard2 {
+  display: flex;
+  width: 95%;
+  max-width: 1500px;
+  gap: 20px;
+  height: 80vh;
+  padding-top: 30px;
+}
+
+.chart-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#barContainer {
+  flex: 0.4;
+}
+
+#scatterContainer {
+  flex: 0.6;
+}
+
+/* Popup background overlay */
+.popup {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+.popup-content {
+  background: white;
+  width: 500px;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #888;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: black;
+}
+
+button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
