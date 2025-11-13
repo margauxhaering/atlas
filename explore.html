@@ -110,92 +110,114 @@
         );
       }
 
-          function computeCategoryCounts(data) {
-            const counts = {};
-            for (const row of data) {
-              if (row.category) counts[row.category] = (counts[row.category] || 0) + 1;
+      function computeCategoryCounts(data) {
+        const categoryGenes = {};
+
+        for (const row of data) {
+          if (row.category && row.gene) {
+            if (!categoryGenes[row.category]) {
+              categoryGenes[row.category] = new Set();
             }
-            return Object.entries(counts)
-              .map(([category, count]) => ({ category, count }))
-              .sort((a, b) => b.count - a.count);
+            categoryGenes[row.category].add(row.gene);
           }
+        }
 
-          function renderBarChart(categoryCounts) {
-            const labels = categoryCounts.map(d => d.category);
-            const counts = categoryCounts.map(d => d.count);
+        const counts = Object.entries(categoryGenes)
+          .map(([category, genes]) => ({
+            category,
+            count: genes.size,
+          }))
+          .sort((a, b) => b.count - a.count);
 
-            if (barChart) barChart.destroy();
+        return counts;
+      }
 
-            const canvas = document.getElementById('barChart');
-            const heightPerCategory = 40;
-            canvas.height = Math.max(300, labels.length * heightPerCategory);
+      function renderBarChart(categoryCounts) {
+        const labels = categoryCounts.map(d => d.category);
+        const counts = categoryCounts.map(d => d.count);
 
-            barChart = new Chart(barCtx, {
-              type: 'bar',
-              data: {
-                labels,
-                datasets: [{
-                  label: 'Gene Count',
-                  data: counts,
-                  backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                  borderColor: 'rgba(153, 102, 255, 1)',
-                  borderWidth: 1,
-                  borderRadius: 6
-                }]
+        if (barChart) barChart.destroy();
+
+        const canvas = document.getElementById('barChart');
+        const heightPerCategory = 40;
+        canvas.height = Math.max(300, labels.length * heightPerCategory);
+
+        const defaultColor = 'rgba(153, 102, 255, 0.6)';
+        const highlightColor = 'rgba(255, 205, 86, 0.9)'; // yellow
+        const backgroundColors = new Array(labels.length).fill(defaultColor);
+
+        barChart = new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Gene Count',
+              data: counts,
+              backgroundColor: backgroundColors,
+              borderColor: 'rgba(153, 102, 255, 1)',
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (evt, elements) => {
+              if (elements.length > 0) {
+                const idx = elements[0].index;
+                const selectedCategory = labels[idx];
+                barChart.data.datasets[0].backgroundColor = backgroundColors.map(() => defaultColor);
+                barChart.data.datasets[0].backgroundColor[idx] = highlightColor;
+                barChart.update();
+
+                updateScatterForCategory(selectedCategory);
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of Genes',
+                  font: { size: 15, weight: 'bold' }
+                }
               },
-              options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                onClick: (evt, elements) => {
-                  if (elements.length > 0) {
-                    const idx = elements[0].index;
-                    const selectedCategory = labels[idx];
-                    updateScatterForCategory(selectedCategory);
-                  }
-                },
-                scales: {
-                  x: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Number of Genes' ,
-                    font: {
-                      size: 15,
-                      weight: 'bold'}}
-                  },
-                  y: {
-                    title: { display: true, text: 'Category' ,
-                    font: {
-                      size: 15,
-                      weight: 'bold'}}
-                  }
-                },
-                plugins: {
-                  legend: { display: false },
-                  title: {
-  display: true,
-  text: 'Gene Counts per Category (click to filter)',
-  font: {
-    size: 20,
-    weight: 'bold'}}
+              y: {
+                title: {
+                  display: true,
+                  text: 'Category',
+                  font: { size: 15, weight: 'bold' }
                 }
               }
-            });
+            },
+            plugins: {
+              legend: { display: false },
+              title: {
+                display: true,
+                text: 'Gene Counts per Category (click to filter)',
+                font: { size: 20, weight: 'bold' }
+              }
+            }
           }
+        });
+      }
 
-         function getColorForLog2FC(value) {
+          function getColorForLog2FC(value) {
             if (isNaN(value)) return '#999';
             if (value >= 2) {
               const t = Math.min((value - 2) / 8, 1);
-              const r = Math.round(173 - 173 * t);
-              const g = Math.round(216 - 216 * t);
-              const b = 230;
-              return `rgb(${r}, ${g}, ${b})`;
-            } else if (value <= -2) {
-              const t = Math.min((Math.abs(value) - 2) / 8, 1);
               const r = Math.round(255 - 155 * t);
               const g = Math.round(182 - 182 * t);
               const b = Math.round(193 - 193 * t);
               return `rgb(${r}, ${g}, ${b})`;
+            } else if (value <= -2) {
+              const t = Math.min((Math.abs(value) - 2) / 8, 1);
+              const r = Math.round(173 * (1 - t));
+              const g = Math.round(216 * (1 - t));
+              const b = 230;
+              return `rgb(${r}, ${g}, ${b})`;
+
             } else {
               return '#cccccc';
             }
@@ -336,7 +358,7 @@
         var myVars = Array.from(new Set(orderedheatData.map(d => d.gene)));
 
 
-        const containerWidth = heatmapContainer.clientWidth || window.innerWidth- 100;
+        const containerWidth = heatmapContainer.clientWidth || window.innerWidth - window.innerWidth/20;
         const containerHeight = 400;
 
         const svg = d3.select("#heatmap")
@@ -356,6 +378,47 @@
           .domain(myGroups)
           .padding(0.05);
 
+
+        svg.selectAll("rect.cell")
+          .data(orderedheatData, d => d.condition + ':' + d.gene)
+          .enter()
+          .append("rect")
+          .attr("class", "cell")
+          .attr("x", d => x(d.gene))
+          .attr("y", d => y(d.condition))
+          .attr("width", x.bandwidth())
+          .attr("height", y.bandwidth())
+          .style("fill", d => getColorForLog2FC(d.log2fc))
+          .style("stroke-width", 2)
+          .style("stroke", d => d.value < 0.05 ? "#9E1F63" : "none")
+          .style("cursor", "pointer")
+          .on("click", function(event, d) {
+            highlightGene(event.gene);
+          });
+
+          function reorderHeatmap(order) {
+            const sub = orderedheatData.filter(obj => obj.condition === order[0]);
+            sub.sort((a, b) => a.log2fc - b.log2fc);
+            const geneorder = sub.map(obj => obj.gene);
+            x.domain(geneorder);
+            y.domain(order);
+
+            svg.selectAll("rect")
+              .transition()
+              .duration(1000)
+              .attr("x", d => x(d.gene))
+              .attr("y", d => y(d.condition));
+
+            svg.selectAll(".row-label")
+              .transition()
+              .duration(1000)
+              .attr("y", d => y(d) + y.bandwidth() / 2);
+
+            svg.selectAll(".col-label")
+              .transition()
+              .duration(1000)
+              .attr("y", d => x(d) + x.bandwidth()/2);
+          }
           svg.selectAll(".col-label")
             .data(myVars)
             .enter().append("text")
@@ -377,12 +440,12 @@
         .data(myGroups)
         .enter().append("text")
         .attr("class", "row-label")
-        .attr("x", -5)
-        .attr("y", d => y(d) + y.bandwidth()/2.75)
+        .attr("x", -100)
+        .attr("y", d => y(d) + y.bandwidth()/2)
         .attr("dy", ".32em")
-        .style("text-anchor", "end")
+        .style("cursor", "pointer")
+        .style("font-size", 12)
         .text(d => d)
-        .call(wrapText, 60)
         .on("click", function(d) {
           var currentOrder = myGroups.slice();
           var index = currentOrder.indexOf(d);
@@ -394,71 +457,6 @@
         });
 
 
-        svg.selectAll("rect.cell")
-          .data(orderedheatData, d => d.condition + ':' + d.gene)
-          .enter()
-          .append("rect")
-          .attr("class", "cell")
-          .attr("x", d => x(d.gene))
-          .attr("y", d => y(d.condition))
-          .attr("width", x.bandwidth())
-          .attr("height", y.bandwidth())
-          .style("fill", d => getColorForLog2FC(d.log2fc))
-          .style("stroke-width", 2)
-          .style("stroke", d => d.value < 0.05 ? "#9E1F63" : "none")
-          .style("cursor", "pointer")
-          .on("click", function(event, d) {
-            highlightGene(event.gene);
-          });
-
-      function reorderHeatmap(order) {
-        const sub = orderedheatData.filter(obj => obj.condition === order[0]);
-        sub.sort((a, b) => a.log2fc - b.log2fc);
-        const geneorder = sub.map(obj => obj.gene);
-        x.domain(geneorder);
-        y.domain(order);
-
-        svg.selectAll("rect")
-          .transition()
-          .duration(1000)
-          .attr("x", d => x(d.gene))
-          .attr("y", d => y(d.condition));
-
-        svg.selectAll(".row-label")
-          .transition()
-          .duration(1000)
-          .attr("y", d => y(d) + y.bandwidth()/2);
-
-        svg.selectAll(".col-label")
-          .transition()
-          .duration(1000)
-          .attr("y", d => x(d) + x.bandwidth()/2);
-      }
-
-          }
-
-          function wrapText(text, width) {
-            text.each(function() {
-              var textEl = d3.select(this),
-                  words = textEl.text().split(/\s+/).reverse(),
-                  word,
-                  line = [],
-                  lineNumber = 0,
-                  lineHeight = 1.1, // ems
-                  y = textEl.attr("y"),
-                  dy = parseFloat(textEl.attr("dy")) || 0,
-                  tspan = textEl.text(null).append("tspan").attr("x", -5).attr("y", y).attr("dy", dy + "em");
-              while (word = words.pop()) {
-                line.push(word);
-                tspan.text(line.join(" "));
-                if (tspan.node().getComputedTextLength() > width) {
-                  line.pop();
-                  tspan.text(line.join(" "));
-                  line = [word];
-                  tspan = textEl.append("tspan").attr("x", -5).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-                }
-              }
-            });
           }
 
           function updateScatterForCategory(category) {
