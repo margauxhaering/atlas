@@ -317,56 +317,53 @@
             });
           }
 
-          function renderHeatmap(points, categoryName = '') {
-            heatmapContainer = document.getElementById('heatmap');
-            heatmapContainer.innerHTML = '';
+      function renderHeatmap(points, categoryName = '', selectedConditions = null) {
+        heatmapContainer = document.getElementById('heatmap');
+        heatmapContainer.innerHTML = '';
 
+        const allGenes = [...new Set(points.map(p => p.gene))];
+        const allConditions = [...new Set(points.map(p => p.condition))];
 
-            const genes = [...new Set(points.map(p => p.gene))];
-            const conditions = [...new Set(points.map(p => p.condition))];
+        const conditionsToShow = selectedConditions || allConditions;
 
-            const allGenes = [...new Set(points.map(p => p.gene))];
-            const allConditions = [...new Set(points.map(p => p.condition))];
-            const lookup = {};
-            points.forEach(p => {
-              if (!lookup[p.gene]) lookup[p.gene] = {};
-              lookup[p.gene][p.condition] = p;
-            });
+        const lookup = {};
+        points.forEach(p => {
+            if (!lookup[p.gene]) lookup[p.gene] = {};
+            lookup[p.gene][p.condition] = p;
+        });
 
-            const orderedheatData = [];
+        const orderedheatData = [];
 
-            for (const gene of allGenes) {
-              const reference = points.find(p => p.gene === gene);
-
-              for (const condition of allConditions) {
+        for (const gene of allGenes) {
+            const reference = points.find(p => p.gene === gene);
+            for (const condition of conditionsToShow) {
                 if (lookup[gene] && lookup[gene][condition]) {
-                  orderedheatData.push(lookup[gene][condition]);
+                    orderedheatData.push(lookup[gene][condition]);
                 } else {
-                  orderedheatData.push({
-                    gene,
-                    condition,
-                    log2fc: 0,
-                    FDR: null,
-                    annotation: reference.annotation,
-                    category: reference.category
-                  });
+                    orderedheatData.push({
+                        gene,
+                        condition,
+                        log2fc: 0,
+                        FDR: null,
+                        annotation: reference.annotation,
+                        category: reference.category
+                    });
                 }
-              }
             }
+        }
 
-        var myGroups = Array.from(new Set(orderedheatData.map(d => d.condition)));
-        var myVars = Array.from(new Set(orderedheatData.map(d => d.gene)));
-
+        const myGroups = Array.from(new Set(orderedheatData.map(d => d.condition)));
+        const myVars = Array.from(new Set(orderedheatData.map(d => d.gene)));
 
         const containerWidth = heatmapContainer.clientWidth || window.innerWidth - window.innerWidth/20;
-        const containerHeight = 400;
+        const containerHeight = 300;
 
         const svg = d3.select("#heatmap")
           .append("svg")
           .attr("width", containerWidth)
-          .attr("height", containerHeight + 150)
+          .attr("height", containerHeight + 200)
           .append("g")
-          .attr("transform", "translate(100,100)");
+          .attr("transform", "translate(100,60)");
 
         const x = d3.scaleBand()
           .range([0, containerWidth - 150])
@@ -418,6 +415,16 @@
               .transition()
               .duration(1000)
               .attr("y", d => x(d) + x.bandwidth()/2);
+
+              svg.selectAll(".annotation-label")
+                .transition()
+                .duration(1000)
+                .attr("x", d => x(d) + x.bandwidth() / 2)
+                .attr("transform", d => {
+                  const cx = x(d) + x.bandwidth() / 2;
+                  const cy = containerHeight + 5;
+                  return `rotate(-90, ${cx}, ${cy})`;
+                });
           }
           svg.selectAll(".col-label")
             .data(myVars)
@@ -434,6 +441,33 @@
             .on("click", function(event, d) {
               highlightGene(event);
             });
+
+        const geneAnnotations = {};
+      orderedheatData.forEach(d => {
+        if (!geneAnnotations[d.gene]) {
+          geneAnnotations[d.gene] = d.annotation;
+        }
+      });
+      svg.selectAll(".annotation-label")
+        .data(myVars)
+        .enter()
+        .append("text")
+        .attr("class", "annotation-label")
+        .attr("x", d => x(d) + x.bandwidth() / 2)
+        .attr("y", containerHeight + 5)
+        .attr("text-anchor", "end")
+        .attr("dominant-baseline", "middle")
+        .attr("transform", d => {
+          const cx = x(d) + x.bandwidth() / 2;
+          const cy = containerHeight + 5;
+          return `rotate(-90, ${cx}, ${cy})`;
+        })
+        .style("font-size", 12)
+        .style("font-family", "Montserrat, Arial")
+        .style("fill", "#333")
+        .text(d => geneAnnotations[d] || "")
+        .append("title")
+        .text(d => geneAnnotations[d] || "");
 
 
       svg.selectAll(".row-label")

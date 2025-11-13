@@ -93,7 +93,7 @@
     const yScale = d3.scaleLinear().domain(yExtent).range([-scale, scale]);
     const zScale = d3.scaleLinear().domain(zExtent).range([-scale, scale]);
 
-    let angleX = 97.32, angleY =2.87;
+    let angleX = 97.32, angleY =2.9;
 
     function project(x, y, z) {
       const cosY = Math.cos(angleY), sinY = Math.sin(angleY);
@@ -162,20 +162,21 @@
         .attr("opacity", d => 0.5 + 0.5 * project(xScale(d.pc1), yScale(d.pc2), zScale(d.pc3)).depth);
     }
 
-    let dragging = false, lastX, lastY;
-    svg.on("mousedown", (event) => { dragging = true; lastX = event.x; lastY = event.y; svg.style("cursor", "grabbing"); });
-    svg.on("mouseup", () => { dragging = false; svg.style("cursor", "grab"); });
-    svg.on("mousemove", (event) => {
-      if (dragging) {
-        const dx = event.x - lastX;
-        const dy = event.y - lastY;
-        angleY += dx * 0.01;
-        angleX += dy * 0.01;
-        lastX = event.x;
-        lastY = event.y;
-        render();
-      }
-    });
+// moving PCA archive
+  //  let dragging = false, lastX, lastY;
+  //  svg.on("mousedown", (event) => { dragging = true; lastX = event.x; lastY = event.y; svg.style("cursor", "grabbing"); });
+  //  svg.on("mouseup", () => { dragging = false; svg.style("cursor", "grab"); });
+  //  svg.on("mousemove", (event) => {
+  //    if (dragging) {
+  //      const dx = event.x - lastX;
+  //      const dy = event.y - lastY;
+  //      angleY += dx * 0.01;
+  //      angleX += dy * 0.01;
+  //      lastX = event.x;
+  //      lastY = event.y;
+  //      render();
+  //    }
+  //  });
 
     render();
   </script>
