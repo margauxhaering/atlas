@@ -152,7 +152,7 @@ svg {
   width: 100%;
   height: 100%;
   cursor: grab;
-  background: #fafafa;
+  background: #fff;
 }
 
 text.axis-label {
@@ -172,7 +172,7 @@ h1 {
 
 #dashboard {
   display: flex;
-  width: 95%;
+  width: 98%;
   max-width: 100vw;
   gap: 20px;
   height: 80vh;
@@ -183,8 +183,46 @@ h1 {
   max-width: 100vw;
   gap: 20px;
   height: 80vh;
+  padding-top: 30px;
+}
+
+#dashboard3 {
+  display: flex;
+  width: 95%;
+  max-width: 100vw;
+  gap: 20px;
+  height: 80vh;
   padding-top: 40px;
 }
+#dashboard4 {
+  display: flex;
+  width: 95%;
+  max-width: 100vw;
+  gap: 20px;
+  height: 10vh;
+  padding-top: 10px;
+  padding-left: 20px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 6px 10px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tag.selected {
+  font-weight: bold;
+  border-color: #000;
+}
+
 
 .chart-box {
   background: #fff;

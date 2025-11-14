@@ -63,9 +63,16 @@
       <canvas id="barChart"></canvas>
     </div>
   </div>
-    <div id="dashboard2">
+  <div id= "dashboard4" style="display: flex; flex-direction: column; gap: 6px;">
+    <label>Conditions shown in heatmap:</label>
+    <div id="condition-tags" class="tags"></div>
+  </div>
+    <div id="dashboard2" class="chart-box">
                       <div id = "heatmap" style="display:block"></div>
-                    </div></div>
+                    </div>
+
+
+                </div>
   <script>
       const barCtx = document.getElementById('barChart').getContext('2d');
       const scatterCtx = document.getElementById('scatterChart').getContext('2d');
@@ -317,43 +324,76 @@
             });
           }
 
-      function renderHeatmap(points, categoryName = '', selectedConditions = null) {
-        heatmapContainer = document.getElementById('heatmap');
-        heatmapContainer.innerHTML = '';
+          function renderHeatmap(points, categoryName = '', selectedConditions = null) {
+              const heatmapContainer = document.getElementById('heatmap');
+              heatmapContainer.innerHTML = '';
 
-        const allGenes = [...new Set(points.map(p => p.gene))];
-        const allConditions = [...new Set(points.map(p => p.condition))];
+              const allGenes = [...new Set(points.map(p => p.gene))];
+              const allConditions = [...new Set(points.map(p => p.condition))];
 
-        const conditionsToShow = selectedConditions || allConditions;
+              const conditionsToShow = selectedConditions || allConditions;
+              const container = document.getElementById('condition-tags');
 
-        const lookup = {};
-        points.forEach(p => {
-            if (!lookup[p.gene]) lookup[p.gene] = {};
-            lookup[p.gene][p.condition] = p;
-        });
+              container.innerHTML = '';
+              allConditions.forEach(cond => {
+                  const tag = document.createElement('div');
+                  tag.className = 'tag';
+                  tag.textContent = cond;
 
-        const orderedheatData = [];
+                  if (conditionsToShow.includes(cond)) tag.classList.add('selected');
 
-        for (const gene of allGenes) {
-            const reference = points.find(p => p.gene === gene);
-            for (const condition of conditionsToShow) {
-                if (lookup[gene] && lookup[gene][condition]) {
-                    orderedheatData.push(lookup[gene][condition]);
-                } else {
-                    orderedheatData.push({
-                        gene,
-                        condition,
-                        log2fc: 0,
-                        FDR: null,
-                        annotation: reference.annotation,
-                        category: reference.category
-                    });
-                }
-            }
-        }
+                  tag.onclick = () => {
+                      tag.classList.toggle('selected');
 
-        const myGroups = Array.from(new Set(orderedheatData.map(d => d.condition)));
-        const myVars = Array.from(new Set(orderedheatData.map(d => d.gene)));
+                      const selected = Array.from(
+                          container.querySelectorAll('.tag.selected')
+                      ).map(t => t.textContent);
+
+                      renderHeatmap(points, categoryName, selected);
+                  };
+
+                  container.appendChild(tag);
+              });
+
+              const lookup = {};
+              points.forEach(p => {
+                  if (!lookup[p.gene]) lookup[p.gene] = {};
+                  lookup[p.gene][p.condition] = p;
+              });
+
+              const orderedheatData = [];
+              for (const gene of allGenes) {
+                  const reference = points.find(p => p.gene === gene);
+                  for (const condition of conditionsToShow) {
+                      if (lookup[gene] && lookup[gene][condition]) {
+                          orderedheatData.push(lookup[gene][condition]);
+                      } else {
+                          orderedheatData.push({
+                              gene,
+                              condition,
+                              log2fc: 0,
+                              FDR: null,
+                              annotation: reference.annotation,
+                              category: reference.category
+                          });
+                      }
+                  }
+              }
+
+              const geneHasValidValue = {};
+              orderedheatData.forEach(d => {
+                  if (!geneHasValidValue[d.gene]) geneHasValidValue[d.gene] = false;
+
+                  if (d.log2fc !== 0) {
+                      geneHasValidValue[d.gene] = true;
+                  }
+              });
+
+              const filteredGenes = Object.keys(geneHasValidValue).filter(g => geneHasValidValue[g]);
+              const filteredHeatData = orderedheatData.filter(d => filteredGenes.includes(d.gene));
+
+              const myGroups = Array.from(new Set(filteredHeatData.map(d => d.condition)));
+              const myVars = Array.from(new Set(filteredHeatData.map(d => d.gene)));
 
         const containerWidth = heatmapContainer.clientWidth || window.innerWidth - window.innerWidth/20;
         const containerHeight = 300;
@@ -377,7 +417,7 @@
 
 
         svg.selectAll("rect.cell")
-          .data(orderedheatData, d => d.condition + ':' + d.gene)
+          .data(filteredHeatData, d => d.condition + ':' + d.gene)
           .enter()
           .append("rect")
           .attr("class", "cell")
@@ -394,7 +434,7 @@
           });
 
           function reorderHeatmap(order) {
-            const sub = orderedheatData.filter(obj => obj.condition === order[0]);
+            const sub = filteredHeatData.filter(obj => obj.condition === order[0]);
             sub.sort((a, b) => a.log2fc - b.log2fc);
             const geneorder = sub.map(obj => obj.gene);
             x.domain(geneorder);
