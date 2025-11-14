@@ -221,6 +221,7 @@ h1 {
 .tag.selected {
   font-weight: bold;
   border-color: #000;
+  background-color: #fff;
 }
 
 
