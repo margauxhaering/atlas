@@ -19,6 +19,9 @@
         <button><a href="index.html">Home</a></button>
         <button><a href="pca.html">PCA</a></button>
         <button><a href="explore.html">Explore annotation</a></button>
+        <button><a href="ext.html">No annotation</a></button>
+        <button><a href="contact.html">Contact</a></button>
+
       </div>
     </div>
     <div id="popup" class="popup">
@@ -33,8 +36,21 @@
       </div>
     </div>
 <div style="align-items: center;box-sizing: border-box;margin-left:50px;">
+  <div id='mainWrapper' >
 
-  <div style="display: flex; align-items: center; margin: 30px; gap: 20px;">
+    <div class="side-panel" id="highlightPanel">
+      <h2>Highlighted Gene</h2>
+      <ul id="highlightList"></ul>
+
+      <div id="annotationBox" style="margin-top:20px;">
+        <h3>Annotation</h3>
+        <div id="annotationText" style="font-size:14px; color:#444;">
+          No gene selected.
+        </div>
+      </div>
+    </div>
+  <div class="content-area">
+  <div style="margin-bottom: 20px;">
     <div>
       <input
         type="text"
@@ -49,10 +65,6 @@
       </button>
     </div>
 
-    <div
-      id="dynamicBox">
-      <span id="dynamicText">Results will appear here...</span>
-    </div>
   </div>
 
   <div id="dashboard">
@@ -63,16 +75,19 @@
       <canvas id="barChart"></canvas>
     </div>
   </div>
-  <div id= "dashboard4" style="display: flex; flex-direction: column; gap: 6px;">
-    <label>Conditions shown in heatmap:</label>
-    <div id="condition-tags" class="tags"></div>
-  </div>
-    <div id="dashboard2" class="chart-box">
-                      <div id = "heatmap" style="display:block"></div>
-                    </div>
+
+
 
 
                 </div>
+                </div>
+                <div id= "dashboard4" style="display: flex; flex-direction: column; gap: 6px;">
+                  <label>Conditions shown in heatmap:</label>
+                  <div id="condition-tags" class="tags"></div>
+                </div>
+                <div id="dashboard2" class="chart-box">
+                                  <div id = "heatmap" style="display:block"></div>
+                                </div>
 
 </body>
 </html>

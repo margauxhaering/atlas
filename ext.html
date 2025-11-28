@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HDD vs LDD Atlas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="js/ext.js" defer></script>
+  <link href="css/main.css" rel="stylesheet">
+
+</head>
+<body>
+  <div id="topMenu">
+      <h1><a href="index.html">HDD vs LDD Atlas</a></h1>
+      <div id="menuButtons">
+        <button><a href="index.html">Home</a></button>
+        <button><a href="pca.html">PCA</a></button>
+        <button><a href="explore.html">Explore annotation</a></button>
+        <button><a href="ext.html">No annotation</a></button>
+        <button><a href="contact.html">Contact</a></button>
+      </div>
+    </div>
+
+
+    <div id='mainWrapper' >
+
+<div class="side-panel" id="highlightPanel">
+  <h2>Highlighted Genes</h2>
+  <ul id="highlightList"></ul>
+  <button id="dlCSV">⬇️ CSV</button>
+  <button id="dlPNG">⬇️ PNG</button>
+</div>
+<div class="content-area">
+    <div style="margin-bottom: 20px;">
+      <input
+        type="text"
+        id="geneSearch"
+        placeholder="🔍 Search gene name..."
+        style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; width: 250px;"
+      />
+      <button id="searchButton" style="padding: 8px 12px; border-radius: 8px; border: none; background-color: #4CAF50; color: white; cursor: pointer;">
+        Highlight
+      </button>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="scatterChart"></canvas>
+    </div>
+</div>
+</div>
+
+</body>
+</html>

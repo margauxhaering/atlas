@@ -459,6 +459,7 @@ svg.selectAll(".row-label")
 
     function updateScatterForCategory(category) {
       activeGene = null;
+      updateSidePanel();
       const subset = fullData.filter(d => d.category === category);
       renderScatterPlot(subset, category);
       renderHeatmap(subset, category);
@@ -504,10 +505,173 @@ svg.selectAll(".row-label")
         highlightGeneInHeatmap(gene);
         const geneData = fullData.find(d => d.gene === gene);
         const annotation = geneData ? geneData.annotation : 'N/A';
-        const dynamicText = document.getElementById("dynamicText");
-        dynamicText.innerHTML = `Current highlighted Gene: <b>${gene}</b> and its annotation is: <b>${annotation}</b>`;
-    }
+        updateSidePanel();
+        updateAnnotation(gene);
+}
+function updateSidePanel() {
+  const panel = document.getElementById('highlightPanel');
+  const list  = document.getElementById('highlightList');
+  list.innerHTML = '';
 
+  if (!activeGene) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+
+  const rows = fullData.filter(d => d.gene === activeGene);
+
+  const item = document.createElement('li');
+  item.style.position = 'relative';
+  item.style.paddingRight = '25px';
+
+  const title = document.createElement('strong');
+  title.textContent = activeGene;
+  title.style.color = 'darkgreen';
+  item.appendChild(title);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = '✖';
+  removeBtn.style.position = 'absolute';
+  removeBtn.style.right = '6px';
+  removeBtn.style.top = '6px';
+  removeBtn.style.border = 'none';
+  removeBtn.style.background = 'transparent';
+  removeBtn.style.cursor = 'pointer';
+  removeBtn.style.fontSize = '0.9em';
+  removeBtn.style.color = '#888';
+
+  removeBtn.addEventListener('mouseenter', () => removeBtn.style.color = '#c00');
+  removeBtn.addEventListener('mouseleave', () => removeBtn.style.color = '#888');
+
+  removeBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    clearHighlight();
+  });
+
+  item.appendChild(removeBtn);
+
+  const condList = document.createElement('ul');
+  condList.style.listStyle = 'none';
+  condList.style.paddingLeft = '10px';
+  condList.style.marginTop = '4px';
+
+  rows.forEach(r => {
+    const li = document.createElement('li');
+    li.textContent = `${r.condition}: log₂FC=${r.log2fc}`;
+    condList.appendChild(li);
+  });
+
+  item.appendChild(condList);
+
+  const { labels, values } = extractCounts(activeGene);
+
+  if (labels.length > 0) {
+    const chartContainer = document.createElement("div");
+    chartContainer.style.width = "230px";
+    chartContainer.style.height = "90px";
+    chartContainer.style.marginTop = "10px";
+
+    const canvas2 = document.createElement("canvas");
+    canvas2.classList.add("miniChart");
+    canvas2.id = `miniChart_${activeGene}`;
+
+    chartContainer.appendChild(canvas2);
+    item.insertBefore(chartContainer, condList);
+
+    setTimeout(() => {
+      new Chart(canvas2.getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "log₂FC",
+            data: values,
+            borderWidth: 1,
+            backgroundColor: 'rgba(153, 102, 255, 0.6)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { maxRotation: 0, minRotation: 0, font: { size: 8 } },
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { font: { size: 8 } },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          },
+          layout: { padding: 0 }
+        }
+      });
+    }, 10);
+  }
+
+  list.appendChild(item);
+}
+
+
+function updateAnnotation(geneName) {
+  const annBox = document.getElementById("annotationText");
+  const entry = fullData.find(d => d.gene === geneName);
+
+  if (!entry) {
+    annBox.textContent = "No annotation found.";
+    return;
+  }
+
+  annBox.textContent = entry.annotation && entry.annotation.trim() !== ""
+    ? entry.annotation
+    : "No annotation available.";
+}
+
+function extractCounts(geneName) {
+const entries = fullData.filter(d => d.gene === geneName);
+
+if (entries.length === 0) return { labels: [], values: [] };
+
+const sample = entries[0];
+const keys = Object.keys(sample);
+let idx = keys.indexOf("condition");
+
+const countKeys = keys.slice(idx + 1);
+const values = countKeys.map(k => sample[k]);
+
+return { labels: countKeys, values: values };
+}
+
+    function clearHighlight() {
+  activeGene = null;
+
+  if (scatterChart) {
+    const dataset = scatterChart.data.datasets[0];
+    dataset.pointRadius = dataset.data.map(() => 6);
+    dataset.borderWidth = dataset.data.map(() => 1);
+    dataset.borderColor = dataset.data.map(() => '#333');
+    dataset.backgroundColor = dataset.data.map(d => getColorForLog2FC(d.y));
+    scatterChart.update();
+  }
+
+
+  d3.select("#heatmap").selectAll("rect.cell")
+    .style("stroke-width", 2)
+    .style("stroke", d => d.value < 0.05 ? "#9E1F63" : "none");
+
+  d3.select("#heatmap").selectAll(".col-label")
+    .style("font-weight", "normal")
+    .style("fill", "black");
+
+  updateSidePanel();
+}
 
     const geneSearchInput = document.getElementById("geneSearch");
     const searchButton = document.getElementById("searchButton");
@@ -550,3 +714,11 @@ svg.selectAll(".row-label")
         if (e.target === popup) popup.style.display = 'none';
       });
     });
+    function syncSidePanelHeight() {
+      const scatter = document.getElementById("scatterContainer");
+      const panel = document.getElementById("highlightPanel");
+      panel.style.height = scatter.offsetHeight + "px";
+    }
+
+    setTimeout(syncSidePanelHeight, 300);
+    window.addEventListener("resize", syncSidePanelHeight);
