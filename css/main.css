@@ -165,7 +165,7 @@ svg {
 }
 
 #pcaPlot{
-    padding-top: 300px;
+    padding-top: 0;
 }
 
 text.axis-label {
