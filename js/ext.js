@@ -135,13 +135,13 @@ function getColorForLog2FC(value) {
                         const gene = ctx.raw.label;
                         const log2fc = ctx.raw.y;
                         const cond = allConditions[Math.round(ctx.raw.x)];
-                        return `${gene} | ${cond}: log₂FC=${log2fc}`;
+                        return `${gene} | ${cond}`;
                     }
                 }
             },
             title:{
                 display:true,
-                text:'Gene Log₂FC distribution with respect of the condition',
+                text:'Gene Log₂FC distribution with respect to the condition',
                 font:{ size:20, weight:'bold' }
             }
         }
@@ -232,7 +232,7 @@ function getColorForLog2FC(value) {
   fullData.forEach(d => {
     if (highlightedGenes.has(d.gene)) {
       if (!grouped[d.gene]) grouped[d.gene] = [];
-      grouped[d.gene].push({ condition: d.condition, log2fc: d.log2fc });
+      grouped[d.gene].push({ condition: d.condition, log2fc: d.log2fc, FDR: d.FDR });
     }
   });
 
@@ -276,7 +276,14 @@ function getColorForLog2FC(value) {
 
     grouped[gene].forEach(entry => {
       const condItem = document.createElement('li');
-      condItem.textContent = `${entry.condition}: log₂FC=${entry.log2fc}`;
+      const log2fcValue = (entry.log2fc < -2 || entry.log2fc > 2)
+        ? `<strong>${entry.log2fc}</strong>`
+        : entry.log2fc;
+      const fdrValue = (entry.FDR < 0.05)
+        ? `<strong>${entry.FDR}</strong>`
+        : entry.FDR;
+
+      condItem.innerHTML = `${entry.condition}: log₂FC=${log2fcValue} and FDR=${fdrValue}`;
       condList.appendChild(condItem);
     });
     const { labels, values } = extractCounts(gene);

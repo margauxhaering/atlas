@@ -238,7 +238,7 @@ function renderBarChart(categoryCounts) {
                   const log2fc = context.raw.y;
                   const annot = context.raw.annot;
                   const cond = allConditions[Math.round(context.raw.x)];
-                  return `${gene} | ${annot}: Log₂FC = ${log2fc}`;
+                  return `${gene} | ${annot}`;
                 }
 
               }
@@ -319,7 +319,7 @@ function renderBarChart(categoryCounts) {
         const myGroups = Array.from(new Set(filteredHeatData.map(d => d.condition)));
         const myVars = Array.from(new Set(filteredHeatData.map(d => d.gene)));
 
-  const containerWidth = heatmapContainer.clientWidth || window.innerWidth - window.innerWidth/20;
+  const containerWidth = heatmapContainer.clientWidth || window.innerWidth - window.innerWidth/30;
   const containerHeight = 300;
 
   const svg = d3.select("#heatmap")
@@ -559,7 +559,14 @@ function updateSidePanel() {
 
   rows.forEach(r => {
     const li = document.createElement('li');
-    li.textContent = `${r.condition}: log₂FC=${r.log2fc}`;
+    const log2fcValue = (r.log2fc < -2 || r.log2fc > 2)
+      ? `<strong>${r.log2fc}</strong>`
+      : r.log2fc;
+    const fdrValue = (r.FDR < 0.05)
+      ? `<strong>${r.FDR}</strong>`
+      : r.FDR;
+
+    li.innerHTML = `${r.condition}: log₂FC=${log2fcValue} and FDR=${fdrValue}`;
     condList.appendChild(li);
   });
 
