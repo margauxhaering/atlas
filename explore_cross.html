@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-  <script src="js/explore.js" defer></script>
+  <script src="js/explore_cross.js" defer></script>
   <link href="css/main.css" rel="stylesheet">
 
 </head>
@@ -28,11 +28,10 @@
     <div id="popup" class="popup">
       <div class="popup-content">
         <span class="close">&times;</span>
-        <h2>Welcome to the data exploration!</h2>
+        <h2>Welcome to the cross data exploration!</h2>
         <p>To explore this RNA-seq data experiement, you will start by selecting a category on the right by clicking on the purple bar.
-        <br><br> The order of the experiment is related to its title of condition.
-      <br><br> <b>Example :</b><br> LDD vs HDD - Night : what is up or downregulated is LDD in the night compared to HDD in the night, so basically <span style="color: red;">red</span> represents what's upregulated in LDD and <span style="color: blue;">blue</span> what's upregulated in HDD.
-      <br><br> You have now access to all four comparisons. <br> You can click a dot to highlight the gene but also from the heatmap below. And also reorder the heatmap by clicking on the desired condition.</p>
+        <br><br> Same rules than in the 'Explore annotation', except you have access to an other dataset.
+      <br><br> The added dataset is the 6 months prolonged darkness vs control in <i> Stylophora pistillata</i> of <a target="_blank" href="https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.16199 ">Rouan et al, 2021 </a> paper. </p>
         <button id="okButton">OK</button>
       </div>
     </div>
