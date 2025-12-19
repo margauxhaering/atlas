@@ -203,8 +203,7 @@ function renderBarChart(categoryCounts) {
               max: allConditions.length - 0.5,
               ticks: {
                 callback: (val, index) => {
-                  if (index % 2 === 0) return '';
-                  const conditionIndex = Math.floor((index - 1) / 2);
+                  const conditionIndex = Math.floor((index - 1));
                   return allConditions[conditionIndex] || '';
                 }
               },
