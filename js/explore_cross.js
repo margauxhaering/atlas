@@ -7,7 +7,7 @@ let allConditions = [];
 let activeGene = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  fetch('data/data_dark.json')
+  fetch('data/data_cross.json')
     .then(response => {
       if (!response.ok) throw new Error("JSON file not found or inaccessible");
       return response.json();

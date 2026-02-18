@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
         alert("Invalid JSON format — must have 'gene', 'log2fc', 'condition', 'annotation', and 'category' fields.");
         return;
       }
-
+      fullData = fullData.map(({ _row, ...rest }) => rest);
       allConditions = [...new Set(fullData.map(d => d.condition))];
       const categoryCounts = computeCategoryCounts(fullData);
       renderBarChart(categoryCounts);
