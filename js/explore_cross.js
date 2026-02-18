@@ -603,7 +603,7 @@ function updateSidePanel() {
           maintainAspectRatio: false,
           scales: {
             x: {
-              ticks: { maxRotation: 0, minRotation: 0, font: { size: 8 } },
+              ticks: { maxRotation: 0, minRotation: 45, font: { size: 8 } },
               grid: { display: false }
             },
             y: {
