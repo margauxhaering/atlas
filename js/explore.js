@@ -164,13 +164,17 @@ function renderBarChart(categoryCounts) {
 
       const scatterData = points.map(p => {
         const xIndex = allConditions.indexOf(p.condition);
+        const isSignificant = p.FDR !== null && p.FDR < 0.05;
         return {
           x: xIndex + addJitter(),
-          y: p.log2fc,
-          backgroundColor: getColorForLog2FC(p.log2fc),
-          label: p.gene,
-          annot:p.annotation
-        };
+              y: p.log2fc,
+              backgroundColor: isSignificant
+                ? getColorForLog2FC(p.log2fc)
+                : "#D3D3D3",
+              label: p.gene,
+              annot: p.annotation,
+              FDR: p.FDR
+            };
       });
 
       scatterChart = new Chart(scatterCtx, {
@@ -349,9 +353,13 @@ function renderBarChart(categoryCounts) {
     .attr("y", d => y(d.condition))
     .attr("width", x.bandwidth())
     .attr("height", y.bandwidth())
-    .style("fill", d => getColorForLog2FC(d.log2fc))
+    .style("fill", d => {
+  const isSignificant = d.FDR !== null && d.FDR < 0.05;
+  return isSignificant
+    ? getColorForLog2FC(d.log2fc)
+    : "#EEEEEE";
+})
     .style("stroke-width", 2)
-    .style("stroke", d => d.value < 0.05 ? "#9E1F63" : "none")
     .style("cursor", "pointer")
     .on("click", function(event, d) {
       highlightGene(event.gene);
@@ -486,7 +494,6 @@ svg.selectAll(".row-label")
         .style("font-weight", "bold")
         .style("fill", "darkgreen");
     }
-
 
 
     function highlightGene(gene) {
