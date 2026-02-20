@@ -505,7 +505,13 @@ svg.selectAll(".row-label")
       dataset.borderWidth = dataset.data.map(d => d.label === gene ? 3 : 1);
       dataset.borderColor = dataset.data.map(d => d.label === gene ? '#000' : '#333');
       dataset.backgroundColor = dataset.data.map(d =>
-        d.label === gene ? 'rgba(144, 238, 144, 1)' : getColorForLog2FC(d.y)
+        d.label === gene
+          ? (d.FDR !== null && d.FDR < 0.05
+              ? 'rgba(144, 238, 144, 1)'
+              : '#A9A9A9')
+          : (d.FDR !== null && d.FDR < 0.05
+              ? getColorForLog2FC(d.y)
+              : '#D3D3D3')
       );
 
         scatterChart.update();
