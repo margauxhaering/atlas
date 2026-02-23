@@ -161,7 +161,6 @@ function renderBarChart(categoryCounts) {
 
     function renderScatterPlot(points, categoryName = '') {
       if (scatterChart) scatterChart.destroy();
-
       const scatterData = points.map(p => {
         const xIndex = allConditions.indexOf(p.condition);
         const isSignificant = p.FDR !== null && p.FDR < 0.05;

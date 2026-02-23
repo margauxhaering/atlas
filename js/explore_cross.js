@@ -161,16 +161,19 @@ function renderBarChart(categoryCounts) {
 
     function renderScatterPlot(points, categoryName = '') {
       if (scatterChart) scatterChart.destroy();
-
       const scatterData = points.map(p => {
         const xIndex = allConditions.indexOf(p.condition);
+        const isSignificant = p.FDR !== null && p.FDR < 0.05;
         return {
           x: xIndex + addJitter(),
-          y: p.log2fc,
-          backgroundColor: getColorForLog2FC(p.log2fc),
-          label: p.gene,
-          annot:p.annotation
-        };
+              y: p.log2fc,
+              backgroundColor: isSignificant
+                ? getColorForLog2FC(p.log2fc)
+                : "#D3D3D3",
+              label: p.gene,
+              annot:p.annotation,
+              FDR: p.FDR
+          };
       });
 
       scatterChart = new Chart(scatterCtx, {
@@ -348,9 +351,13 @@ function renderBarChart(categoryCounts) {
     .attr("y", d => y(d.condition))
     .attr("width", x.bandwidth())
     .attr("height", y.bandwidth())
-    .style("fill", d => getColorForLog2FC(d.log2fc))
+    .style("fill", d => {
+  const isSignificant = d.FDR !== null && d.FDR < 0.05;
+  return isSignificant
+    ? getColorForLog2FC(d.log2fc)
+    : "#EEEEEE";
+})
     .style("stroke-width", 2)
-    .style("stroke", d => d.value < 0.05 ? "#9E1F63" : "none")
     .style("cursor", "pointer")
     .on("click", function(event, d) {
       highlightGene(event.gene);
@@ -466,7 +473,6 @@ svg.selectAll(".row-label")
 
 
     function highlightGeneInHeatmap(gene) {
-
     d3.select("#heatmap").selectAll("rect.cell")
         .style("stroke", d => d.value < 0.05 ? "#9E1F63" : "none")
         .style("stroke-width", 2)
@@ -487,7 +493,6 @@ svg.selectAll(".row-label")
     }
 
 
-
     function highlightGene(gene) {
       activeGene = gene;
       const dataset = scatterChart.data.datasets[0];
@@ -497,7 +502,13 @@ svg.selectAll(".row-label")
       dataset.borderWidth = dataset.data.map(d => d.label === gene ? 3 : 1);
       dataset.borderColor = dataset.data.map(d => d.label === gene ? '#000' : '#333');
       dataset.backgroundColor = dataset.data.map(d =>
-        d.label === gene ? 'rgba(144, 238, 144, 1)' : getColorForLog2FC(d.y)
+        d.label === gene
+          ? (d.FDR !== null && d.FDR < 0.05
+              ? 'rgba(144, 238, 144, 1)'
+              : '#A9A9A9')
+          : (d.FDR !== null && d.FDR < 0.05
+              ? getColorForLog2FC(d.y)
+              : '#D3D3D3')
       );
 
         scatterChart.update();
