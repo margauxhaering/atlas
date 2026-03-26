@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDD vs LDD Atlas</title>
+  <title>LDD vs HDD Atlas</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
@@ -14,7 +14,7 @@
 <body>
 
     <div id="topMenu">
-      <h1><a href="index.html">HDD vs LDD Atlas</a></h1>
+      <h1><a href="index.html">LDD vs HDD Atlas</a></h1>
       <div id="menuButtons">
         <button><a href="index.html">Home</a></button>
         <button><a href="pca.html">PCA</a></button>
@@ -82,8 +82,10 @@
                 </div>
                 </div>
                 <div id= "dashboard4" style="display: flex; flex-direction: column; gap: 6px;">
-                  <label>Conditions shown in heatmap:</label>
+                  <label>Rearange the heatmap by clicking on a condition directly on the heatmap.
+                    <br><br> Conditions shown in heatmap (unselect or select again):</label>
                   <div id="condition-tags" class="tags"></div>
+
                 </div>
                 <div id="dashboard2" class="chart-box">
                                   <div id = "heatmap" style="display:block"></div>

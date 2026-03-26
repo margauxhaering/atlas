@@ -317,7 +317,13 @@ function renderBarChart(categoryCounts) {
         });
 
         const filteredGenes = Object.keys(geneHasValidValue).filter(g => geneHasValidValue[g]);
-        const filteredHeatData = orderedheatData.filter(d => filteredGenes.includes(d.gene));
+        const filteredHeatData = orderedheatData
+  .filter(d => filteredGenes.includes(d.gene))
+  .sort((a, b) => {
+    if (a.condition === 'LDD vs HDD - day' && b.condition !== 'LDD vs HDD - day') return -1;
+    if (a.condition !== 'LDD vs HDD - day' && b.condition === 'LDD vs HDD - day') return 1;
+    return a.log2fc - b.log2fc;
+  });
 
         const myGroups = Array.from(new Set(filteredHeatData.map(d => d.condition)));
         const myVars = Array.from(new Set(filteredHeatData.map(d => d.gene)));
