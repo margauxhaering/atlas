@@ -11,7 +11,7 @@ Scripts and supplementaries for the paper [blabla]().
 **ORGANISATION**
 
 
-This repertory contains several folders : 
+This repository contains several folders : 
   - **scripts** for preprocessing scripts 
   - **suppl** for supplementary figures and tables
   - **atlas** for scripts of the atlas
