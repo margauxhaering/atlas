@@ -35,6 +35,6 @@ Raw count table was processed using [RNfuzzyApp](https://pubmed.ncbi.nlm.nih.gov
 Atlas was developed with JavaScript.
   - ***OVERVIEW*** show the PCA
   - ***EXPLORE*** offers the main tool for exploring DEGs across the pairwise comparisons
-  - ***DISCOVER*** propose a discovery alternative for unknown DEGs to potentially lead new investigations
+  - ***DISCOVER*** suggests a discovery alternative for unknown DEGs to potentially lead new investigations
 
 ---
