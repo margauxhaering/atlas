@@ -179,6 +179,16 @@ text.axis-label {
 
 #########
 
+.close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .site-title{
   margin: 0;
 }
@@ -200,6 +210,11 @@ text.axis-label {
 h1 {
   color: #333;
   margin-bottom: 20px;
+}
+
+
+.img-block img:hover {
+  transform: scale(1.5) translateX(-200px);;
 }
 
 

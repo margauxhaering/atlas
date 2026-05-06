@@ -98,6 +98,17 @@ function render() {
     .attr("y", d => project(...d.end).y - 5)
     .text(d => d.label);
 
+    const tooltip = d3.select("body")
+  .append("div")
+  .style("position", "absolute")
+  .style("padding", "6px 10px")
+  .style("background", "rgba(0,0,0,0.7)")
+  .style("color", "#fff")
+  .style("border-radius", "4px")
+  .style("font-size", "12px")
+  .style("pointer-events", "none")
+  .style("opacity", 0);
+
   const points = g.selectAll("circle").data(data, d => d.point);
   points.enter().append("circle")
     .attr("r", 10)
@@ -107,8 +118,26 @@ function render() {
                     project(xScale(b.pc1), yScale(b.pc2), zScale(b.pc3)).depth)
     .attr("cx", d => project(xScale(d.pc1), yScale(d.pc2), zScale(d.pc3)).x)
     .attr("cy", d => project(xScale(d.pc1), yScale(d.pc2), zScale(d.pc3)).y)
-    .attr("opacity", d => 0.5 + 0.5 * project(xScale(d.pc1), yScale(d.pc2), zScale(d.pc3)).depth);
+    .attr("opacity", d => 0.5 + 0.5 * project(xScale(d.pc1), yScale(d.pc2), zScale(d.pc3)).depth)
+    .on("mouseover", function(event, d) {
+      tooltip
+        .style("opacity", 1)
+        .html(`
+          <strong>${d.point}</strong>
+        `);
+    })
+    .on("mousemove", function(event) {
+      tooltip
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY + 10) + "px");
+    })
+    .on("mouseout", function() {
+      tooltip.style("opacity", 0);
+    })
+    .merge(points)
 }
+
+
 
 // moving PCA archive
 //  let dragging = false, lastX, lastY;
