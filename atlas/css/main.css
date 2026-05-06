@@ -11,6 +11,9 @@ body{
 a{
   text-decoration: none;
 }
+a:visited {
+  color: black;
+}
 
 #absContainer {
   flex: 0.5;
@@ -175,6 +178,23 @@ text.axis-label {
 }
 
 #########
+
+.site-title{
+  margin: 0;
+}
+
+.site-title a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo {
+  height: 45px;
+  width: auto;
+}
 
 
 h1 {
